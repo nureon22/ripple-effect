@@ -1,0 +1,27 @@
+{
+  "name": "ripple-effect",
+  "version": "1.0.0",
+  "description": "Create ripple effect animation when users interact with UI elements on the web",
+  "type": "module",
+  "module": "dist/main.esm.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "build:iife": "npx esbuild src/main.js --format=iife --global-name=RippleEffect --target=es2020 --bundle --minify --outfile=dist/main.js",
+    "build:esm": "npx esbuild src/main.js --format=esm --target=es2020 --bundle --minify --outfile=dist/main.esm.js",
+    "build": "npm run build:iife && npm run build:esm && npx tsc"
+  },
+  "keywords": [
+    "ripple",
+    "web"
+  ],
+  "author": "nureon22",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nureon22/ripple-effect.git"
+  }
+}
