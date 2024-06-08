@@ -115,7 +115,7 @@ class RippleEffect {
         effect.style.backgroundColor = this.options.color;
         effect.style.opacity = "0";
         effect.style.transform = "translate(-50%, -50%) scale(0)";
-        effect.style.transition = `transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration}ms linear 0ms`;
+        effect.style.transition = `transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms linear 0ms`;
 
         const exit = () => {
             effect.style.opacity = "0";
