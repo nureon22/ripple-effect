@@ -147,11 +147,12 @@ class RippleEffect {
 
     /**
      * @param {HTMLElement} target
+     * @param {RippleEffectOptions} options
      * @return {RippleEffect}
      */
-    static attachTo(target) {
+    static attachTo(target, options) {
         if (!(target[`__${uniqueID}_RippleEffect`] instanceof RippleEffect)) {
-            return target[`__${uniqueID}_RippleEffect`] = new RippleEffect(target);
+            return target[`__${uniqueID}_RippleEffect`] = new RippleEffect(target, options);
         }
         return target[`__${uniqueID}_RippleEffect`];
     }
