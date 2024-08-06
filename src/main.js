@@ -161,3 +161,7 @@ export default class RippleEffect {
     }
 }
 
+if (typeof window == "object") {
+  Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
+}
+

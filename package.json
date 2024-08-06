@@ -1,6 +1,6 @@
 {
   "name": "@nureon22/ripple-effect",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Create ripple effect animation when users interact with UI elements on the web",
   "author": "Phyo Wai Lin <phyowailin2004@proton.me>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "main": "dist/main.common.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "build:iife": "esbuild src/main.js --format=iife --global-name=RippleEffect --target=es2020 --bundle --sourcemap --outfile=dist/main.js",
+    "build:iife": "esbuild src/main.js --format=iife --target=es2020 --bundle --sourcemap --outfile=dist/main.js",
     "build:esm": "esbuild src/main.js --format=esm --target=es2020 --bundle --sourcemap --outfile=dist/main.esm.js",
     "build:cjs": "esbuild src/main.js --format=cjs --target=es2020 --bundle --sourcemap --outfile=dist/main.common.js",
     "build": "npm run build:iife && npm run build:esm && npm run build:cjs && npx tsc"
