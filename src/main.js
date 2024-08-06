@@ -12,29 +12,31 @@ window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: t
  * @prop {number} opacity Default 0.12.
  * @prop {number} duration ripple effect animation duration in milliseconds. Default 400.
  * @prop {boolean} unbounded If true, the ripple effect overflow will be visible. Default false,
- * @prop {boolean} autoexit If true, the ripple effect exits without waiting for user action. Default true,
+ * @prop {boolean} autoexit If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  */
 
-class RippleEffect {
+export default class RippleEffect {
     /** @type {(() => void)[]} */
     _destroy_tasks = [];
 
+    /** @type {Document} **/
+    document;
+
     /** @type {RippleEffectOptions} */
-    options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, autoexit: true };
+    options;
 
     /**
      * @param {HTMLElement} target
-     * @param {RippleEffectOptions} [defaultOptions]
+     * @param {RippleEffectOptions} [options]
      */
-    constructor(target, defaultOptions) {
+    constructor(target, options) {
         if (!(target instanceof HTMLElement)) {
             throw new TypeError("Argument 1 must be instanceof HTMLElement");
         }
+
         this.target = target;
-
-        this.options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, ...defaultOptions };
-
         this.document = this.target.ownerDocument;
+        this.options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, autoexit: true, ...options };
 
         this.wrapper = this.document.createElement("span");
         this.wrapper.style.display = "block";
@@ -58,7 +60,7 @@ class RippleEffect {
             if (isMouseEvent && isTouchscreen) return;
 
             let pressing = true;
-            let x, y, size;
+            let x, y;
 
             const rect = this.wrapper.getBoundingClientRect();
 
@@ -70,7 +72,7 @@ class RippleEffect {
                 y = event.targetTouches[0].clientY - rect.y;
             }
 
-            size = Math.hypot(Math.max(x, rect.width - x), Math.max(y, rect.height - y)) * 2;
+            let size = Math.hypot(Math.max(x, rect.width - x), Math.max(y, rect.height - y)) * 2;
 
             if (this.options.autoexit) {
                 /** @type {() => void} */
@@ -94,6 +96,7 @@ class RippleEffect {
     }
 
     /**
+     * Trigger a new ripple effect
      * @param {number} x
      * @param {number} y
      * @param {number} size
@@ -158,11 +161,3 @@ class RippleEffect {
     }
 }
 
-if (typeof window == "object") {
-    Object.defineProperty(window, "__RippleEffect", {
-        value: RippleEffect,
-        enumerable: false,
-        configurable: true,
-        writable: true,
-    });
-}
