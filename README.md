@@ -31,8 +31,10 @@ Copy files from [dist](dist/) directory to your project.
 ## Usage
 
 ```javascript
-RippleEffect.attachTo(element, options);
+RippleEffect.attachTo(targetElement, options);
 ```
+
+**Note** TargetElement's CSS position must be relative or absolute.
 
 ## Supported Options
 

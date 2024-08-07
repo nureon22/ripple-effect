@@ -50,6 +50,11 @@ export default class RippleEffect {
         this.wrapper.style.pointerEvents = "none";
         this.target.prepend(this.wrapper);
 
+        let targetCSSPosition = getComputedStyle(this.target).getPropertyValue("position");
+        if (targetCSSPosition != "relative" && targetCSSPosition != "absolute") {
+            this.target.style.position = "relative";
+        }
+
         /**
          * @param {MouseEvent | TouchEvent} event
          */
