@@ -8,11 +8,11 @@ window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: t
 
 /**
  * @typedef RippleEffectOptions
- * @prop {string} color Default "currentColor"
- * @prop {number} opacity Default 0.12.
- * @prop {number} duration ripple effect animation duration in milliseconds. Default 400.
- * @prop {boolean} unbounded If true, the ripple effect overflow will be visible. Default false,
- * @prop {boolean} autoexit If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
+ * @prop {string} [color] Default "currentColor"
+ * @prop {number} [opacity] Default 0.12.
+ * @prop {number} [duration] ripple effect animation duration in milliseconds. Default 400.
+ * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
+ * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  */
 
 export default class RippleEffect {
