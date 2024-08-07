@@ -2,7 +2,7 @@
 
 Create ripple animation when user click the element.
 
-[Preview how it look](assets/preview.webm)
+[Preview how it look](assets/preview.gif)
 
 ## Installation
 
@@ -26,7 +26,7 @@ import RippleEffect from "https://cdn.jsdelivr.net/npm/@nureon22/ripple-effect/d
 
 ### Without CDN
 
-Copy files from [dist](dist/) directory to your project.
+Copy files from [dist](https://cdn.jsdelivr.net/npm/@nureon22/ripple-effect/dist/) directory to your project.
 
 ## Usage
 
@@ -52,3 +52,4 @@ If true, the ripple effect overflow will be visible. Default false.
 
 autoexit - boolean\
 If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
+
