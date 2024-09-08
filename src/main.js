@@ -98,6 +98,9 @@ export default class RippleEffect {
             this.target.removeEventListener("mousedown", onTouch);
             this.target.removeEventListener("touchstart", onTouch);
         });
+        this._destroy_tasks.push(() => {
+            this.wrapper.remove();
+        });
     }
 
     /**
