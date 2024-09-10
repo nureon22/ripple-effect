@@ -6,6 +6,13 @@ let isTouchscreen = false;
 
 window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: true });
 
+
+async function waitAnimationFrame() {
+    return new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+    });
+}
+
 /**
  * @typedef RippleEffectOptions
  * @prop {string} [color] Default "currentColor"
@@ -110,7 +117,7 @@ export default class RippleEffect {
      * @param {number} size
      * @param {((exit: () => void) => void)} [exitFn] If exitFn is given, the created ripple effect will not exit even after enter animation is finished. You need to call the exit function passed to exitFn as a first argument.
      */
-    trigger(x, y, size, exitFn) {
+    async trigger(x, y, size, exitFn) {
         if (Number.isNaN(x)) throw new TypeError("Argument 1 must be a valid number");
         if (Number.isNaN(y)) throw new TypeError("Argument 2 must be a valid number");
         if (Number.isNaN(size)) throw new TypeError("Argument 3 must be a valid number");
@@ -136,19 +143,20 @@ export default class RippleEffect {
             }, this.options.duration);
         };
 
+        await waitAnimationFrame();
         this.wrapper.append(effect);
-        requestAnimationFrame(() => {
-            effect.style.opacity = this.options.opacity + "";
-            effect.style.transform = "translate(-50%, -50%) scale(1)";
 
-            window.setTimeout(() => {
-                if (typeof exitFn === "function") {
-                    exitFn(exit);
-                } else {
-                    exit();
-                }
-            }, this.options.duration);
-        });
+        await waitAnimationFrame();
+        effect.style.opacity = this.options.opacity + "";
+        effect.style.transform = "translate(-50%, -50%) scale(1)";
+
+        window.setTimeout(() => {
+            if (typeof exitFn === "function") {
+                exitFn(exit);
+            } else {
+                exit();
+            }
+        }, this.options.duration);
     }
 
     destroy() {
@@ -170,6 +178,6 @@ export default class RippleEffect {
 }
 
 if (typeof window == "object") {
-  Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
+    Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
 }
 
