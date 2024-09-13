@@ -46,15 +46,18 @@ export default class RippleEffect {
         this.options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, autoexit: true, ...options };
 
         this.wrapper = this.document.createElement("span");
-        this.wrapper.style.display = "block";
-        this.wrapper.style.position = "absolute";
-        this.wrapper.style.left = "0px";
-        this.wrapper.style.top = "0px";
-        this.wrapper.style.width = "100%";
-        this.wrapper.style.height = "100%";
-        this.wrapper.style.borderRadius = "inherit";
-        this.wrapper.style.overflow = this.options.unbounded ? "visible" : "hidden";
-        this.wrapper.style.pointerEvents = "none";
+        this.wrapper.style.cssText = `
+            display: block;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+            border-radius: inherit;
+            color: ${this.options.color || "currentColor"};
+            overflow: ${this.options.unbounded ? "visible" : "hidden"};
+            pointer-events: none;
+        `;
         this.target.prepend(this.wrapper);
 
         let targetCSSPosition = getComputedStyle(this.target).getPropertyValue("position");
@@ -123,17 +126,19 @@ export default class RippleEffect {
         if (Number.isNaN(size)) throw new TypeError("Argument 3 must be a valid number");
 
         const effect = this.document.createElement("span");
-        effect.style.display = "block";
-        effect.style.position = "absolute";
-        effect.style.left = x + "px";
-        effect.style.top = y + "px";
-        effect.style.width = size + "px";
-        effect.style.height = size + "px";
-        effect.style.borderRadius = "50%";
-        effect.style.backgroundColor = this.options.color;
-        effect.style.opacity = "0";
-        effect.style.transform = "translate(-50%, -50%) scale(0)";
-        effect.style.transition = `transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms linear 0ms`;
+        effect.style.cssText = `
+            display: block;
+            background-color: currentColor;
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms ease 0ms;
+        `;
 
         const exit = () => {
             effect.style.opacity = "0";
