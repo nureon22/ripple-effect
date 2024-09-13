@@ -60,6 +60,20 @@ export default class RippleEffect {
         `;
         this.target.prepend(this.wrapper);
 
+        this.wrapperHover = this.document.createElement("span");
+        this.wrapperHover.style.cssText = `
+            display: block;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+            background-color: currentColor;
+            opacity: 0;
+            transition: opacity ${this.options.duration / 2}ms ease 0ms;
+        `;
+        this.wrapper.prepend(this.wrapperHover);
+
         let targetCSSPosition = getComputedStyle(this.target).getPropertyValue("position");
         if (targetCSSPosition != "relative" && targetCSSPosition != "absolute") {
             this.target.style.position = "relative";
@@ -101,12 +115,26 @@ export default class RippleEffect {
             }
         };
 
+        const onHover = (event) => {
+            if (event.type == "mouseenter") {
+                this.wrapperHover.style.opacity = this.options.opacity + "";
+            } else {
+                this.wrapperHover.style.opacity = "0";
+            }
+        }
+
         this.target.addEventListener("mousedown", onTouch);
         this.target.addEventListener("touchstart", onTouch);
+
+        this.target.addEventListener("mouseenter", onHover);
+        this.target.addEventListener("mouseleave", onHover);
 
         this._destroy_tasks.push(() => {
             this.target.removeEventListener("mousedown", onTouch);
             this.target.removeEventListener("touchstart", onTouch);
+
+            this.target.removeEventListener("mouseenter", onHover);
+            this.target.removeEventListener("mouseleave", onHover);
         });
         this._destroy_tasks.push(() => {
             this.wrapper.remove();
