@@ -14,6 +14,16 @@ async function waitAnimationFrame() {
 }
 
 /**
+ * @prop {HTMLElement} element
+ * @prop {{ [key: string]: string }} properties
+ */
+function setCSSProperties(element, properties) {
+  for (let key in properties) {
+    element.style.setProperty(key, properties[key]);
+  }
+}
+
+/**
  * @typedef RippleEffectOptions
  * @prop {string} [color] Default "currentColor"
  * @prop {number} [opacity] Default 0.12.
@@ -46,32 +56,32 @@ export default class RippleEffect {
         this.options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, autoexit: true, ...options };
 
         this.wrapper = this.document.createElement("span");
-        this.wrapper.style.cssText = `
-            display: block;
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            bottom: 0px;
-            left: 0px;
-            border-radius: inherit;
-            color: ${this.options.color || "currentColor"};
-            overflow: ${this.options.unbounded ? "visible" : "hidden"};
-            pointer-events: none;
-        `;
+        setCSSProperties(this.wrapper, {
+            "display": "block",
+            "position": "absolute",
+            "top": "0px",
+            "right": "0px",
+            "bottom": "0px",
+            "left": "0px",
+            "border-radius": "inherit",
+            "color": this.options.color || "currentColor",
+            "overflow": this.options.unbounded ? "visible" : "hidden",
+            "pointer-events": "none",
+        });
         this.target.prepend(this.wrapper);
 
         this.wrapperHover = this.document.createElement("span");
-        this.wrapperHover.style.cssText = `
-            display: block;
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            bottom: 0px;
-            left: 0px;
-            background-color: currentColor;
-            opacity: 0;
-            transition: opacity ${this.options.duration / 2}ms ease 0ms;
-        `;
+        setCSSProperties(this.wrapperHover, {
+          "display": "block",
+          "position": "absolute",
+          "top": "0px",
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px",
+          "background-color": "currentColor",
+          "opacity": "0",
+          "transition": `opacity ${this.options.duration / 2}ms ease 0ms`
+        });
         this.wrapper.prepend(this.wrapperHover);
 
         let targetCSSPosition = getComputedStyle(this.target).getPropertyValue("position");
@@ -154,19 +164,19 @@ export default class RippleEffect {
         if (Number.isNaN(size)) throw new TypeError("Argument 3 must be a valid number");
 
         const effect = this.document.createElement("span");
-        effect.style.cssText = `
-            display: block;
-            background-color: currentColor;
-            position: absolute;
-            left: ${x}px;
-            top: ${y}px;
-            width: ${size}px;
-            height: ${size}px;
-            border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms ease 0ms;
-        `;
+        setCSSProperties(effect, {
+            "display": "block",
+            "background-color": "currentColor",
+            "position": "absolute",
+            "left": x + "px",
+            "top": y + "px",
+            "width": size + "px",
+            "height": size + "px",
+            "border-radius": "50%",
+            "opacity": "0",
+            "transform": "translate(-50%, -50%) scale(0)",
+            "transition": `transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms ease 0ms`,
+        });
 
         const exit = () => {
             effect.style.opacity = "0";
