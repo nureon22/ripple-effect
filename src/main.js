@@ -30,6 +30,7 @@ function setCSSProperties(element, properties) {
  * @prop {number} [duration] ripple effect animation duration in milliseconds. Default 400.
  * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
+ * @prop {boolean} [rounded] If true, the ripple effect boundary will become perfect circle.
  */
 
 export default class RippleEffect {
@@ -63,7 +64,7 @@ export default class RippleEffect {
             "right": "0px",
             "bottom": "0px",
             "left": "0px",
-            "border-radius": "inherit",
+            "border-radius": this.options.rounded ? "50%" : "inherit",
             "color": this.options.color || "currentColor",
             "overflow": this.options.unbounded ? "visible" : "hidden",
             "pointer-events": "none",
@@ -223,4 +224,3 @@ export default class RippleEffect {
 if (typeof window == "object") {
     Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
 }
-
