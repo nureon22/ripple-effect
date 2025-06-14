@@ -2,11 +2,6 @@ const uniqueID = (() => {
     return String(Math.random()).slice(2);
 })();
 
-let isTouchscreen = false;
-
-window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: true });
-
-
 async function waitAnimationFrame() {
     return new Promise((resolve) => {
         window.requestAnimationFrame(resolve);
@@ -221,6 +216,9 @@ export default class RippleEffect {
     }
 }
 
+let isTouchscreen = false;
+
 if (typeof window == "object") {
     Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
+    window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: true });
 }
