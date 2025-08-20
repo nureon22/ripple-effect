@@ -23,6 +23,7 @@ function setCSSProperties(element, properties) {
  * @prop {string} [color] Default "currentColor"
  * @prop {number} [opacity] Default 0.12.
  * @prop {number} [duration] ripple effect animation duration in milliseconds. Default 400.
+ * @prop {number} [exitdelay] ripple effect exit delay in milliseconds. Default 0.
  * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  * @prop {boolean} [rounded] If true, the ripple effect boundary will become perfect circle.
@@ -50,7 +51,16 @@ export default class RippleEffect {
 
         this.target = target;
         this.document = this.target.ownerDocument;
-        this.options = { color: "currentColor", opacity: 0.12, duration: 400, unbounded: false, autoexit: true, ...options };
+        this.options = {
+            color: "currentColor",
+            opacity: 0.12,
+            duration: 400,
+            unbounded: false,
+            autoexit: true,
+            trigger: target,
+            exitdelay: 0,
+            ...options
+        };
 
         this.wrapper = this.document.createElement("span");
         setCSSProperties(this.wrapper, {
@@ -198,7 +208,7 @@ export default class RippleEffect {
             } else {
                 exit();
             }
-        }, this.options.duration);
+        }, this.options.duration + this.options.exitdelay);
     }
 
     destroy() {
