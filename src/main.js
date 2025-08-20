@@ -26,6 +26,7 @@ function setCSSProperties(element, properties) {
  * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  * @prop {boolean} [rounded] If true, the ripple effect boundary will become perfect circle.
+ * @prop {HTMLElement} [trigger] Set different trigger element, by default trigger element is same as target
  */
 
 export default class RippleEffect {
@@ -40,7 +41,7 @@ export default class RippleEffect {
 
     /**
      * @param {HTMLElement} target
-     * @param {RippleEffectOptions} [options]
+     * @param {?RippleEffectOptions=} [options]
      */
     constructor(target, options) {
         if (!(target instanceof HTMLElement)) {
@@ -129,18 +130,20 @@ export default class RippleEffect {
             }
         }
 
-        this.target.addEventListener("mousedown", onTouch);
-        this.target.addEventListener("touchstart", onTouch);
+        const trigger = this.options.trigger ?? this.target;
 
-        this.target.addEventListener("mouseenter", onHover);
-        this.target.addEventListener("mouseleave", onHover);
+        trigger.addEventListener("mousedown", onTouch);
+        trigger.addEventListener("touchstart", onTouch);
+
+        trigger.addEventListener("mouseenter", onHover);
+        trigger.addEventListener("mouseleave", onHover);
 
         this._destroy_tasks.push(() => {
-            this.target.removeEventListener("mousedown", onTouch);
-            this.target.removeEventListener("touchstart", onTouch);
+            trigger.removeEventListener("mousedown", onTouch);
+            trigger.removeEventListener("touchstart", onTouch);
 
-            this.target.removeEventListener("mouseenter", onHover);
-            this.target.removeEventListener("mouseleave", onHover);
+            trigger.removeEventListener("mouseenter", onHover);
+            trigger.removeEventListener("mouseleave", onHover);
         });
         this._destroy_tasks.push(() => {
             this.wrapper.remove();
