@@ -27,6 +27,7 @@ function setCSSProperties(element, properties) {
  * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  * @prop {boolean} [rounded] If true, the ripple effect boundary will become perfect circle.
+ * @prop {boolean} [centered] If true, the ripple effect will always be triggered from center of target element instead of touched position.
  * @prop {HTMLElement} [trigger] Set different trigger element, by default trigger element is same as target
  */
 
@@ -59,6 +60,8 @@ export default class RippleEffect {
             autoexit: true,
             trigger: target,
             exitdelay: 0,
+            centered: false,
+            rounded: false,
             ...options
         };
 
@@ -110,7 +113,10 @@ export default class RippleEffect {
 
             const rect = this.wrapper.getBoundingClientRect();
 
-            if (isMouseEvent) {
+            if (this.options.centered) {
+                x = rect.width / 2 ;
+                y = rect.height / 2;
+            } else if (isMouseEvent) {
                 x = event.x - rect.x;
                 y = event.y - rect.y;
             } else {
