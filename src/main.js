@@ -29,6 +29,7 @@ function setCSSProperties(element, properties) {
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
  * @prop {boolean} [rounded] If true, the ripple effect boundary will become perfect circle.
  * @prop {boolean} [centered] If true, the ripple effect will always be triggered from center of target element instead of touched position.
+ * @prop {boolean} [keydown] If true, the ripple effect will be triggered by keydown event. Default true
  * @prop {HTMLElement} [trigger] Set different trigger element, by default trigger element is same as target
  */
 
@@ -64,6 +65,7 @@ export default class RippleEffect {
             centered: false,
             rounded: false,
             easing: 'ease-in',
+            keydown: true,
             ...options
         };
 
@@ -197,7 +199,9 @@ export default class RippleEffect {
 
         const trigger = this.options.trigger ?? this.target;
 
-        trigger.addEventListener("keydown", onKeyDown);
+        if (this.options.keydown) {
+            trigger.addEventListener("keydown", onKeyDown);
+        }
 
         trigger.addEventListener("mousedown", onTouch);
         trigger.addEventListener("touchstart", onTouch);
@@ -206,7 +210,9 @@ export default class RippleEffect {
         trigger.addEventListener("mouseleave", onHover);
 
         this._destroy_tasks.push(() => {
-            trigger.removeEventListener("keydown", onKeyDown);
+            if (this.options.keydown) {
+                trigger.removeEventListener("keydown", onKeyDown);
+            }
 
             trigger.removeEventListener("mousedown", onTouch);
             trigger.removeEventListener("touchstart", onTouch);
