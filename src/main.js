@@ -23,6 +23,7 @@ function setCSSProperties(element, properties) {
  * @prop {string} [color] Default "currentColor"
  * @prop {number} [opacity] Default 0.12.
  * @prop {number} [duration] ripple effect animation duration in milliseconds. Default 400.
+ * @prop {string} [easing] ripple effect animation timing function Default ease-in.
  * @prop {number} [exitdelay] ripple effect exit delay in milliseconds. Default 0.
  * @prop {boolean} [unbounded] If true, the ripple effect overflow will be visible. Default false,
  * @prop {boolean} [autoexit] If true, the ripple effect wouldn't exit until mouseup or touchend event. Default true.
@@ -62,6 +63,7 @@ export default class RippleEffect {
             exitdelay: 0,
             centered: false,
             rounded: false,
+            easing: 'ease-in',
             ...options
         };
 
@@ -90,7 +92,7 @@ export default class RippleEffect {
           "left": "0px",
           "background-color": "currentColor",
           "opacity": "0",
-          "transition": `opacity ${this.options.duration / 2}ms ease 0ms`
+          "transition": `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`
         });
         this.wrapper.prepend(this.wrapperHover);
 
@@ -190,7 +192,7 @@ export default class RippleEffect {
             "border-radius": "50%",
             "opacity": "0",
             "transform": "translate(-50%, -50%) scale(0)",
-            "transition": `transform ${this.options.duration}ms ease 0ms, opacity ${this.options.duration / 2}ms ease 0ms`,
+            "transition": `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
         });
 
         const exit = () => {
