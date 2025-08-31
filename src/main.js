@@ -102,6 +102,39 @@ export default class RippleEffect {
         }
 
         /**
+            * @param {KeyboardEvent} event
+            */
+        const onKeyDown = (event) => {
+            let pressing = true;
+            let x, y;
+
+            const rect = this.wrapper.getBoundingClientRect();
+
+            x = rect.width / 2;
+            y = rect.height / 2;
+
+            if (this.options.autoexit) {
+                /** @type {() => void} */
+                let exit;
+
+                this.trigger(x, y, (e) => {
+                    exit = e;
+                    !pressing && exit();
+                });
+                window.addEventListener(
+                    "keyup",
+                    () => {
+                        pressing = false;
+                        exit && exit();
+                    },
+                    { once: true },
+                );
+            } else {
+                this.trigger(x, y);
+            }
+        };
+
+        /**
          * @param {MouseEvent | TouchEvent} event
          */
         const onTouch = (event) => {
@@ -126,17 +159,31 @@ export default class RippleEffect {
                 y = event.targetTouches[0].clientY - rect.y;
             }
 
-            let size = Math.hypot(Math.max(x, rect.width - x), Math.max(y, rect.height - y)) * 2;
-
             if (this.options.autoexit) {
                 /** @type {() => void} */
                 let exit;
 
-                this.trigger(x, y, size, (e) => { exit = e; !pressing && exit(); });
-                window.addEventListener("mouseup", () => { !isTouchscreen && (pressing = false, exit && exit()); }, { once: true });
-                window.addEventListener("touchend", () => { pressing = false; exit && exit(); }, { once: true });
+                this.trigger(x, y, (e) => {
+                    exit = e;
+                    !pressing && exit();
+                });
+                window.addEventListener(
+                    "mouseup",
+                    () => {
+                        !isTouchscreen && ((pressing = false), exit && exit());
+                    },
+                    { once: true },
+                );
+                window.addEventListener(
+                    "touchend",
+                    () => {
+                        pressing = false;
+                        exit && exit();
+                    },
+                    { once: true },
+                );
             } else {
-                this.trigger(x, y, size);
+                this.trigger(x, y);
             }
         };
 
@@ -150,6 +197,8 @@ export default class RippleEffect {
 
         const trigger = this.options.trigger ?? this.target;
 
+        trigger.addEventListener("keydown", onKeyDown);
+
         trigger.addEventListener("mousedown", onTouch);
         trigger.addEventListener("touchstart", onTouch);
 
@@ -157,6 +206,8 @@ export default class RippleEffect {
         trigger.addEventListener("mouseleave", onHover);
 
         this._destroy_tasks.push(() => {
+            trigger.removeEventListener("keydown", onKeyDown);
+
             trigger.removeEventListener("mousedown", onTouch);
             trigger.removeEventListener("touchstart", onTouch);
 
@@ -172,13 +223,18 @@ export default class RippleEffect {
      * Trigger a new ripple effect
      * @param {number} x
      * @param {number} y
-     * @param {number} size
      * @param {((exit: () => void) => void)} [exitFn] If exitFn is given, the created ripple effect will not exit even after enter animation is finished. You need to call the exit function passed to exitFn as a first argument.
      */
-    async trigger(x, y, size, exitFn) {
+    async trigger(x, y, exitFn) {
         if (Number.isNaN(x)) throw new TypeError("Argument 1 must be a valid number");
         if (Number.isNaN(y)) throw new TypeError("Argument 2 must be a valid number");
-        if (Number.isNaN(size)) throw new TypeError("Argument 3 must be a valid number");
+
+        const rect = this.wrapper.getBoundingClientRect();
+        const size =
+                Math.hypot(
+                    Math.max(x, rect.width - x),
+                    Math.max(y, rect.height - y),
+                ) * 2;
 
         const effect = this.document.createElement("span");
         setCSSProperties(effect, {
