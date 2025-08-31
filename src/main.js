@@ -13,9 +13,9 @@ async function waitAnimationFrame() {
  * @prop {{ [key: string]: string }} properties
  */
 function setCSSProperties(element, properties) {
-  for (let key in properties) {
-    element.style.setProperty(key, properties[key]);
-  }
+    for (let key in properties) {
+        element.style.setProperty(key, properties[key]);
+    }
 }
 
 /**
@@ -64,48 +64,53 @@ export default class RippleEffect {
             exitdelay: 0,
             centered: false,
             rounded: false,
-            easing: 'ease-in',
+            easing: "ease-in",
             keydown: true,
-            ...options
+            ...options,
         };
 
         this.wrapper = this.document.createElement("span");
         setCSSProperties(this.wrapper, {
-            "display": "block",
-            "position": "absolute",
-            "top": "0px",
-            "right": "0px",
-            "bottom": "0px",
-            "left": "0px",
+            display: "block",
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            bottom: "0px",
+            left: "0px",
             "border-radius": this.options.rounded ? "50%" : "inherit",
-            "color": this.options.color || "currentColor",
-            "overflow": this.options.unbounded ? "visible" : "hidden",
+            color: this.options.color || "currentColor",
+            overflow: this.options.unbounded ? "visible" : "hidden",
             "pointer-events": "none",
         });
         this.target.prepend(this.wrapper);
 
         this.wrapperHover = this.document.createElement("span");
         setCSSProperties(this.wrapperHover, {
-          "display": "block",
-          "position": "absolute",
-          "top": "0px",
-          "right": "0px",
-          "bottom": "0px",
-          "left": "0px",
-          "background-color": "currentColor",
-          "opacity": "0",
-          "transition": `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`
+            display: "block",
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            bottom: "0px",
+            left: "0px",
+            "background-color": "currentColor",
+            opacity: "0",
+            transition: `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
         });
         this.wrapper.prepend(this.wrapperHover);
 
-        let targetCSSPosition = getComputedStyle(this.target).getPropertyValue("position");
-        if (targetCSSPosition != "relative" && targetCSSPosition != "absolute") {
+        let targetCSSPosition = getComputedStyle(this.target).getPropertyValue(
+            "position",
+        );
+        if (
+            targetCSSPosition != "relative" &&
+            targetCSSPosition != "absolute"
+        ) {
             this.target.style.position = "relative";
         }
 
         /**
-            * @param {KeyboardEvent} event
-            */
+         * @param {KeyboardEvent} event
+         */
         const onKeyDown = (event) => {
             let pressing = true;
             let x, y;
@@ -151,7 +156,7 @@ export default class RippleEffect {
             const rect = this.wrapper.getBoundingClientRect();
 
             if (this.options.centered) {
-                x = rect.width / 2 ;
+                x = rect.width / 2;
                 y = rect.height / 2;
             } else if (isMouseEvent) {
                 x = event.x - rect.x;
@@ -195,7 +200,7 @@ export default class RippleEffect {
             } else {
                 this.wrapperHover.style.opacity = "0";
             }
-        }
+        };
 
         const trigger = this.options.trigger ?? this.target;
 
@@ -232,29 +237,31 @@ export default class RippleEffect {
      * @param {((exit: () => void) => void)} [exitFn] If exitFn is given, the created ripple effect will not exit even after enter animation is finished. You need to call the exit function passed to exitFn as a first argument.
      */
     async trigger(x, y, exitFn) {
-        if (Number.isNaN(x)) throw new TypeError("Argument 1 must be a valid number");
-        if (Number.isNaN(y)) throw new TypeError("Argument 2 must be a valid number");
+        if (Number.isNaN(x))
+            throw new TypeError("Argument 1 must be a valid number");
+        if (Number.isNaN(y))
+            throw new TypeError("Argument 2 must be a valid number");
 
         const rect = this.wrapper.getBoundingClientRect();
         const size =
-                Math.hypot(
-                    Math.max(x, rect.width - x),
-                    Math.max(y, rect.height - y),
-                ) * 2;
+            Math.hypot(
+                Math.max(x, rect.width - x),
+                Math.max(y, rect.height - y),
+            ) * 2;
 
         const effect = this.document.createElement("span");
         setCSSProperties(effect, {
-            "display": "block",
+            display: "block",
             "background-color": "currentColor",
-            "position": "absolute",
-            "left": x + "px",
-            "top": y + "px",
-            "width": size + "px",
-            "height": size + "px",
+            position: "absolute",
+            left: x + "px",
+            top: y + "px",
+            width: size + "px",
+            height: size + "px",
             "border-radius": "50%",
-            "opacity": "0",
-            "transform": "translate(-50%, -50%) scale(0)",
-            "transition": `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+            opacity: "0",
+            transform: "translate(-50%, -50%) scale(0)",
+            transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
         });
 
         const exit = () => {
@@ -282,7 +289,7 @@ export default class RippleEffect {
     }
 
     destroy() {
-        this._destroy_tasks.forEach(task => task.call(this));
+        this._destroy_tasks.forEach((task) => task.call(this));
         delete this.target[`__${uniqueID}_RippleEffect`];
     }
 
@@ -293,7 +300,10 @@ export default class RippleEffect {
      */
     static attachTo(target, options) {
         if (!(target[`__${uniqueID}_RippleEffect`] instanceof RippleEffect)) {
-            return target[`__${uniqueID}_RippleEffect`] = new RippleEffect(target, options);
+            return (target[`__${uniqueID}_RippleEffect`] = new RippleEffect(
+                target,
+                options,
+            ));
         }
         return target[`__${uniqueID}_RippleEffect`];
     }
@@ -302,6 +312,17 @@ export default class RippleEffect {
 let isTouchscreen = false;
 
 if (typeof window == "object") {
-    Object.defineProperty(window, "RippleEffect", { value: RippleEffect, configurable: true, enumerable: false, writable: true });
-    window.addEventListener("touchstart", () => { isTouchscreen = true; }, { once: true });
+    Object.defineProperty(window, "RippleEffect", {
+        value: RippleEffect,
+        configurable: true,
+        enumerable: false,
+        writable: true,
+    });
+    window.addEventListener(
+        "touchstart",
+        () => {
+            isTouchscreen = true;
+        },
+        { once: true },
+    );
 }
