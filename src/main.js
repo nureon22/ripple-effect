@@ -109,6 +109,10 @@ export default class RippleEffect {
      * @param {KeyboardEvent} event
      */
     const onKeyDown = (event) => {
+      if (event.key != ' ') {
+        return;
+      }
+
       let pressing = true;
       let x, y;
 
