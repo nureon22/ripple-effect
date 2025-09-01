@@ -1,11 +1,11 @@
 const uniqueID = (() => {
-    return String(Math.random()).slice(2);
+  return String(Math.random()).slice(2);
 })();
 
 async function waitAnimationFrame() {
-    return new Promise((resolve) => {
-        window.requestAnimationFrame(resolve);
-    });
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(resolve);
+  });
 }
 
 /**
@@ -13,9 +13,9 @@ async function waitAnimationFrame() {
  * @prop {{ [key: string]: string }} properties
  */
 function setCSSProperties(element, properties) {
-    for (let key in properties) {
-        element.style.setProperty(key, properties[key]);
-    }
+  for (let key in properties) {
+    element.style.setProperty(key, properties[key]);
+  }
 }
 
 /**
@@ -34,295 +34,289 @@ function setCSSProperties(element, properties) {
  */
 
 export default class RippleEffect {
-    /** @type {(() => void)[]} */
-    _destroy_tasks = [];
+  /** @type {(() => void)[]} */
+  _destroy_tasks = [];
 
-    /** @type {Document} **/
-    document;
+  /** @type {Document} **/
+  document;
 
-    /** @type {RippleEffectOptions} */
-    options;
+  /** @type {RippleEffectOptions} */
+  options;
+
+  /**
+   * @param {HTMLElement} target
+   * @param {?RippleEffectOptions=} [options]
+   */
+  constructor(target, options) {
+    if (!(target instanceof HTMLElement)) {
+      throw new TypeError("Argument 1 must be instanceof HTMLElement");
+    }
+
+    this.target = target;
+    this.document = this.target.ownerDocument;
+    this.options = {
+      color: "currentColor",
+      opacity: 0.12,
+      duration: 400,
+      unbounded: false,
+      autoexit: true,
+      trigger: target,
+      exitdelay: 0,
+      centered: false,
+      rounded: false,
+      easing: "ease-in",
+      keydown: true,
+      ...options,
+    };
+
+    this.wrapper = this.document.createElement("span");
+    setCSSProperties(this.wrapper, {
+      display: "block",
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      bottom: "0px",
+      left: "0px",
+      "border-radius": this.options.rounded ? "50%" : "inherit",
+      color: this.options.color || "currentColor",
+      overflow: this.options.unbounded ? "visible" : "hidden",
+      "pointer-events": "none",
+    });
+    this.target.prepend(this.wrapper);
+
+    this.wrapperHover = this.document.createElement("span");
+    setCSSProperties(this.wrapperHover, {
+      display: "block",
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      bottom: "0px",
+      left: "0px",
+      "background-color": "currentColor",
+      opacity: "0",
+      transition: `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+    });
+    this.wrapper.prepend(this.wrapperHover);
+
+    let targetCSSPosition = getComputedStyle(this.target).getPropertyValue(
+      "position",
+    );
+    if (targetCSSPosition != "relative" && targetCSSPosition != "absolute") {
+      this.target.style.position = "relative";
+    }
 
     /**
-     * @param {HTMLElement} target
-     * @param {?RippleEffectOptions=} [options]
+     * @param {KeyboardEvent} event
      */
-    constructor(target, options) {
-        if (!(target instanceof HTMLElement)) {
-            throw new TypeError("Argument 1 must be instanceof HTMLElement");
-        }
+    const onKeyDown = (event) => {
+      let pressing = true;
+      let x, y;
 
-        this.target = target;
-        this.document = this.target.ownerDocument;
-        this.options = {
-            color: "currentColor",
-            opacity: 0.12,
-            duration: 400,
-            unbounded: false,
-            autoexit: true,
-            trigger: target,
-            exitdelay: 0,
-            centered: false,
-            rounded: false,
-            easing: "ease-in",
-            keydown: true,
-            ...options,
-        };
+      const rect = this.wrapper.getBoundingClientRect();
 
-        this.wrapper = this.document.createElement("span");
-        setCSSProperties(this.wrapper, {
-            display: "block",
-            position: "absolute",
-            top: "0px",
-            right: "0px",
-            bottom: "0px",
-            left: "0px",
-            "border-radius": this.options.rounded ? "50%" : "inherit",
-            color: this.options.color || "currentColor",
-            overflow: this.options.unbounded ? "visible" : "hidden",
-            "pointer-events": "none",
+      x = rect.width / 2;
+      y = rect.height / 2;
+
+      if (this.options.autoexit) {
+        /** @type {() => void} */
+        let exit;
+
+        this.trigger(x, y, (e) => {
+          exit = e;
+          !pressing && exit();
         });
-        this.target.prepend(this.wrapper);
-
-        this.wrapperHover = this.document.createElement("span");
-        setCSSProperties(this.wrapperHover, {
-            display: "block",
-            position: "absolute",
-            top: "0px",
-            right: "0px",
-            bottom: "0px",
-            left: "0px",
-            "background-color": "currentColor",
-            opacity: "0",
-            transition: `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
-        });
-        this.wrapper.prepend(this.wrapperHover);
-
-        let targetCSSPosition = getComputedStyle(this.target).getPropertyValue(
-            "position",
+        window.addEventListener(
+          "keyup",
+          () => {
+            pressing = false;
+            exit && exit();
+          },
+          { once: true },
         );
-        if (
-            targetCSSPosition != "relative" &&
-            targetCSSPosition != "absolute"
-        ) {
-            this.target.style.position = "relative";
-        }
-
-        /**
-         * @param {KeyboardEvent} event
-         */
-        const onKeyDown = (event) => {
-            let pressing = true;
-            let x, y;
-
-            const rect = this.wrapper.getBoundingClientRect();
-
-            x = rect.width / 2;
-            y = rect.height / 2;
-
-            if (this.options.autoexit) {
-                /** @type {() => void} */
-                let exit;
-
-                this.trigger(x, y, (e) => {
-                    exit = e;
-                    !pressing && exit();
-                });
-                window.addEventListener(
-                    "keyup",
-                    () => {
-                        pressing = false;
-                        exit && exit();
-                    },
-                    { once: true },
-                );
-            } else {
-                this.trigger(x, y);
-            }
-        };
-
-        /**
-         * @param {MouseEvent | TouchEvent} event
-         */
-        const onTouch = (event) => {
-            const isMouseEvent = event instanceof MouseEvent;
-
-            // prevent mouse event in touchscreen devices
-            if (isMouseEvent && isTouchscreen) return;
-
-            let pressing = true;
-            let x, y;
-
-            const rect = this.wrapper.getBoundingClientRect();
-
-            if (this.options.centered) {
-                x = rect.width / 2;
-                y = rect.height / 2;
-            } else if (isMouseEvent) {
-                x = event.x - rect.x;
-                y = event.y - rect.y;
-            } else {
-                x = event.targetTouches[0].clientX - rect.x;
-                y = event.targetTouches[0].clientY - rect.y;
-            }
-
-            if (this.options.autoexit) {
-                /** @type {() => void} */
-                let exit;
-
-                this.trigger(x, y, (e) => {
-                    exit = e;
-                    !pressing && exit();
-                });
-                window.addEventListener(
-                    "mouseup",
-                    () => {
-                        !isTouchscreen && ((pressing = false), exit && exit());
-                    },
-                    { once: true },
-                );
-                window.addEventListener(
-                    "touchend",
-                    () => {
-                        pressing = false;
-                        exit && exit();
-                    },
-                    { once: true },
-                );
-            } else {
-                this.trigger(x, y);
-            }
-        };
-
-        const onHover = (event) => {
-            if (event.type == "mouseenter") {
-                this.wrapperHover.style.opacity = this.options.opacity + "";
-            } else {
-                this.wrapperHover.style.opacity = "0";
-            }
-        };
-
-        const trigger = this.options.trigger ?? this.target;
-
-        if (this.options.keydown) {
-            trigger.addEventListener("keydown", onKeyDown);
-        }
-
-        trigger.addEventListener("mousedown", onTouch);
-        trigger.addEventListener("touchstart", onTouch);
-
-        trigger.addEventListener("mouseenter", onHover);
-        trigger.addEventListener("mouseleave", onHover);
-
-        this._destroy_tasks.push(() => {
-            if (this.options.keydown) {
-                trigger.removeEventListener("keydown", onKeyDown);
-            }
-
-            trigger.removeEventListener("mousedown", onTouch);
-            trigger.removeEventListener("touchstart", onTouch);
-
-            trigger.removeEventListener("mouseenter", onHover);
-            trigger.removeEventListener("mouseleave", onHover);
-        });
-        this._destroy_tasks.push(() => {
-            this.wrapper.remove();
-        });
-    }
+      } else {
+        this.trigger(x, y);
+      }
+    };
 
     /**
-     * Trigger a new ripple effect
-     * @param {number} x
-     * @param {number} y
-     * @param {((exit: () => void) => void)} [exitFn] If exitFn is given, the created ripple effect will not exit even after enter animation is finished. You need to call the exit function passed to exitFn as a first argument.
+     * @param {MouseEvent | TouchEvent} event
      */
-    async trigger(x, y, exitFn) {
-        if (Number.isNaN(x))
-            throw new TypeError("Argument 1 must be a valid number");
-        if (Number.isNaN(y))
-            throw new TypeError("Argument 2 must be a valid number");
+    const onTouch = (event) => {
+      const isMouseEvent = event instanceof MouseEvent;
 
-        const rect = this.wrapper.getBoundingClientRect();
-        const size =
-            Math.hypot(
-                Math.max(x, rect.width - x),
-                Math.max(y, rect.height - y),
-            ) * 2;
+      // prevent mouse event in touchscreen devices
+      if (isMouseEvent && isTouchscreen) return;
 
-        const effect = this.document.createElement("span");
-        setCSSProperties(effect, {
-            display: "block",
-            "background-color": "currentColor",
-            position: "absolute",
-            left: x + "px",
-            top: y + "px",
-            width: size + "px",
-            height: size + "px",
-            "border-radius": "50%",
-            opacity: "0",
-            transform: "translate(-50%, -50%) scale(0)",
-            transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+      let pressing = true;
+      let x, y;
+
+      const rect = this.wrapper.getBoundingClientRect();
+
+      if (this.options.centered) {
+        x = rect.width / 2;
+        y = rect.height / 2;
+      } else if (isMouseEvent) {
+        x = event.x - rect.x;
+        y = event.y - rect.y;
+      } else {
+        x = event.targetTouches[0].clientX - rect.x;
+        y = event.targetTouches[0].clientY - rect.y;
+      }
+
+      if (this.options.autoexit) {
+        /** @type {() => void} */
+        let exit;
+
+        this.trigger(x, y, (e) => {
+          exit = e;
+          !pressing && exit();
         });
+        window.addEventListener(
+          "mouseup",
+          () => {
+            !isTouchscreen && ((pressing = false), exit && exit());
+          },
+          { once: true },
+        );
+        window.addEventListener(
+          "touchend",
+          () => {
+            pressing = false;
+            exit && exit();
+          },
+          { once: true },
+        );
+      } else {
+        this.trigger(x, y);
+      }
+    };
 
-        const exit = () => {
-            effect.style.opacity = "0";
+    const onHover = (event) => {
+      if (event.type == "mouseenter") {
+        this.wrapperHover.style.opacity = this.options.opacity + "";
+      } else {
+        this.wrapperHover.style.opacity = "0";
+      }
+    };
 
-            setTimeout(() => {
-                effect.remove();
-            }, this.options.duration);
-        };
+    const trigger = this.options.trigger ?? this.target;
 
-        await waitAnimationFrame();
-        this.wrapper.append(effect);
-
-        await waitAnimationFrame();
-        effect.style.opacity = this.options.opacity + "";
-        effect.style.transform = "translate(-50%, -50%) scale(1)";
-
-        window.setTimeout(() => {
-            if (typeof exitFn === "function") {
-                exitFn(exit);
-            } else {
-                exit();
-            }
-        }, this.options.duration + this.options.exitdelay);
+    if (this.options.keydown) {
+      trigger.addEventListener("keydown", onKeyDown);
     }
 
-    destroy() {
-        this._destroy_tasks.forEach((task) => task.call(this));
-        delete this.target[`__${uniqueID}_RippleEffect`];
-    }
+    trigger.addEventListener("mousedown", onTouch);
+    trigger.addEventListener("touchstart", onTouch);
 
-    /**
-     * @param {HTMLElement} target
-     * @param {RippleEffectOptions} options
-     * @return {RippleEffect}
-     */
-    static attachTo(target, options) {
-        if (!(target[`__${uniqueID}_RippleEffect`] instanceof RippleEffect)) {
-            return (target[`__${uniqueID}_RippleEffect`] = new RippleEffect(
-                target,
-                options,
-            ));
-        }
-        return target[`__${uniqueID}_RippleEffect`];
+    trigger.addEventListener("mouseenter", onHover);
+    trigger.addEventListener("mouseleave", onHover);
+
+    this._destroy_tasks.push(() => {
+      if (this.options.keydown) {
+        trigger.removeEventListener("keydown", onKeyDown);
+      }
+
+      trigger.removeEventListener("mousedown", onTouch);
+      trigger.removeEventListener("touchstart", onTouch);
+
+      trigger.removeEventListener("mouseenter", onHover);
+      trigger.removeEventListener("mouseleave", onHover);
+    });
+    this._destroy_tasks.push(() => {
+      this.wrapper.remove();
+    });
+  }
+
+  /**
+   * Trigger a new ripple effect
+   * @param {number} x
+   * @param {number} y
+   * @param {((exit: () => void) => void)} [exitFn] If exitFn is given, the created ripple effect will not exit even after enter animation is finished. You need to call the exit function passed to exitFn as a first argument.
+   */
+  async trigger(x, y, exitFn) {
+    if (Number.isNaN(x))
+      throw new TypeError("Argument 1 must be a valid number");
+    if (Number.isNaN(y))
+      throw new TypeError("Argument 2 must be a valid number");
+
+    const rect = this.wrapper.getBoundingClientRect();
+    const size =
+      Math.hypot(Math.max(x, rect.width - x), Math.max(y, rect.height - y)) * 2;
+
+    const effect = this.document.createElement("span");
+    setCSSProperties(effect, {
+      display: "block",
+      "background-color": "currentColor",
+      position: "absolute",
+      left: x + "px",
+      top: y + "px",
+      width: size + "px",
+      height: size + "px",
+      "border-radius": "50%",
+      opacity: "0",
+      transform: "translate(-50%, -50%) scale(0)",
+      transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+    });
+
+    const exit = () => {
+      effect.style.opacity = "0";
+
+      setTimeout(() => {
+        effect.remove();
+      }, this.options.duration);
+    };
+
+    await waitAnimationFrame();
+    this.wrapper.append(effect);
+
+    await waitAnimationFrame();
+    effect.style.opacity = this.options.opacity + "";
+    effect.style.transform = "translate(-50%, -50%) scale(1)";
+
+    window.setTimeout(() => {
+      if (typeof exitFn === "function") {
+        exitFn(exit);
+      } else {
+        exit();
+      }
+    }, this.options.duration + this.options.exitdelay);
+  }
+
+  destroy() {
+    this._destroy_tasks.forEach((task) => task.call(this));
+    delete this.target[`__${uniqueID}_RippleEffect`];
+  }
+
+  /**
+   * @param {HTMLElement} target
+   * @param {RippleEffectOptions} options
+   * @return {RippleEffect}
+   */
+  static attachTo(target, options) {
+    if (!(target[`__${uniqueID}_RippleEffect`] instanceof RippleEffect)) {
+      return (target[`__${uniqueID}_RippleEffect`] = new RippleEffect(
+        target,
+        options,
+      ));
     }
+    return target[`__${uniqueID}_RippleEffect`];
+  }
 }
 
 let isTouchscreen = false;
 
 if (typeof window == "object") {
-    Object.defineProperty(window, "RippleEffect", {
-        value: RippleEffect,
-        configurable: true,
-        enumerable: false,
-        writable: true,
-    });
-    window.addEventListener(
-        "touchstart",
-        () => {
-            isTouchscreen = true;
-        },
-        { once: true },
-    );
+  Object.defineProperty(window, "RippleEffect", {
+    value: RippleEffect,
+    configurable: true,
+    enumerable: false,
+    writable: true,
+  });
+  window.addEventListener(
+    "touchstart",
+    () => {
+      isTouchscreen = true;
+    },
+    { once: true },
+  );
 }
