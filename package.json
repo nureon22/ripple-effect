@@ -1,6 +1,6 @@
 {
   "name": "@nureon22/ripple-effect",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Create ripple effect animation when users interact with UI elements on the web",
   "author": "Phyo Wai Lin <phyowailin2004@proton.me>",
   "license": "MIT",
