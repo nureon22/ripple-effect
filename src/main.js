@@ -21,7 +21,9 @@ function setCSSProperties(element, properties) {
 /**
  * @typedef RippleEffectOptions
  * @prop {string} [color] Default "currentColor"
- * @prop {number} [opacity] Default 0.12.
+ * @prop {number} [hoveredOpacity] Opacity for hovered layer. Default 0.08
+ * @prop {number} [focusedOpacity] Opacity for focused layer. Default 0.08
+ * @prop {number} [pressedOpacity] Opacity for pressed layer. Default 0.12
  * @prop {number} [duration] ripple effect animation duration in milliseconds. Default 400.
  * @prop {string} [easing] ripple effect animation timing function Default ease-in.
  * @prop {number} [exitdelay] ripple effect exit delay in milliseconds. Default 0.
@@ -56,7 +58,6 @@ export default class RippleEffect {
     this.document = this.target.ownerDocument;
     this.options = {
       color: "currentColor",
-      opacity: 0.12,
       duration: 400,
       unbounded: false,
       autoexit: true,
@@ -66,6 +67,9 @@ export default class RippleEffect {
       rounded: false,
       easing: "ease-in",
       keydown: true,
+      hoveredOpacity: 0.08,
+      focusedOpacity: 0.08,
+      pressedOpacity: 0.12,
       ...options,
     };
 
@@ -84,8 +88,7 @@ export default class RippleEffect {
     });
     this.target.prepend(this.wrapper);
 
-    this.wrapperHover = this.document.createElement("span");
-    setCSSProperties(this.wrapperHover, {
+    const hoveredAndFocusedLayerStyles = {
       display: "block",
       position: "absolute",
       top: "0px",
@@ -95,8 +98,15 @@ export default class RippleEffect {
       "background-color": "currentColor",
       opacity: "0",
       transition: `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
-    });
-    this.wrapper.prepend(this.wrapperHover);
+    };
+
+    this.focusedLayer = this.document.createElement("span");
+    setCSSProperties(this.focusedLayer, hoveredAndFocusedLayerStyles);
+    this.wrapper.prepend(this.focusedLayer);
+
+    this.hoveredLayer = this.document.createElement("span");
+    setCSSProperties(this.hoveredLayer, hoveredAndFocusedLayerStyles);
+    this.wrapper.prepend(this.hoveredLayer);
 
     let targetCSSPosition = getComputedStyle(this.target).getPropertyValue(
       "position",
@@ -109,7 +119,7 @@ export default class RippleEffect {
      * @param {KeyboardEvent} event
      */
     const onKeyDown = (event) => {
-      if (event.key != ' ') {
+      if (event.key != " ") {
         return;
       }
 
@@ -195,12 +205,26 @@ export default class RippleEffect {
       }
     };
 
+    /**
+     * @param {MouseEvent} event
+     */
     const onHover = (event) => {
-      if (event.type == "mouseenter") {
-        this.wrapperHover.style.opacity = this.options.opacity + "";
-      } else {
-        this.wrapperHover.style.opacity = "0";
-      }
+      const isHovered = event.type == "mouseenter";
+
+      this.hoveredLayer.style.opacity = String(
+        isHovered ? this.options.hoveredOpacity : 0,
+      );
+    };
+
+    /**
+     * @param {FocusEvent} event
+     */
+    const onFocusChange = (event) => {
+      const isFocused = event.type == "focus";
+
+      this.focusedLayer.style.opacity = String(
+        isFocused ? this.options.focusedOpacity : 0,
+      );
     };
 
     const trigger = this.options.trigger ?? this.target;
@@ -215,6 +239,9 @@ export default class RippleEffect {
     trigger.addEventListener("mouseenter", onHover);
     trigger.addEventListener("mouseleave", onHover);
 
+    trigger.addEventListener("focus", onFocusChange);
+    trigger.addEventListener("blur", onFocusChange);
+
     this._destroy_tasks.push(() => {
       if (this.options.keydown) {
         trigger.removeEventListener("keydown", onKeyDown);
@@ -225,6 +252,9 @@ export default class RippleEffect {
 
       trigger.removeEventListener("mouseenter", onHover);
       trigger.removeEventListener("mouseleave", onHover);
+
+      trigger.removeEventListener("focus", onFocusChange);
+      trigger.removeEventListener("blur", onFocusChange);
     });
     this._destroy_tasks.push(() => {
       this.wrapper.remove();
@@ -274,7 +304,7 @@ export default class RippleEffect {
     this.wrapper.append(effect);
 
     await waitAnimationFrame();
-    effect.style.opacity = this.options.opacity + "";
+    effect.style.opacity = this.options.pressedOpacity + "";
     effect.style.transform = "translate(-50%, -50%) scale(1)";
 
     window.setTimeout(() => {
