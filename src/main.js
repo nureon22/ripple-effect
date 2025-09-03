@@ -57,19 +57,8 @@ export default class RippleEffect {
     this.target = target;
     this.document = this.target.ownerDocument;
     this.options = {
-      color: "currentColor",
-      duration: 400,
-      unbounded: false,
-      autoexit: true,
       trigger: target,
-      exitdelay: 0,
-      centered: false,
-      rounded: false,
-      easing: "ease-in",
-      keydown: true,
-      hoveredOpacity: 0.08,
-      focusedOpacity: 0.08,
-      pressedOpacity: 0.12,
+      ...RippleEffect.defaultOptions,
       ...options,
     };
 
@@ -335,6 +324,22 @@ export default class RippleEffect {
       ));
     }
     return target[`__${uniqueID}_RippleEffect`];
+  }
+
+  /** @type {RippleEffectOptions} */
+  static defaultOptions = {
+    color: "currentColor",
+    duration: 400,
+    unbounded: false,
+    autoexit: true,
+    exitdelay: 0,
+    centered: false,
+    rounded: false,
+    easing: "ease-in",
+    keydown: true,
+    hoveredOpacity: 0.08,
+    focusedOpacity: 0.08,
+    pressedOpacity: 0.12,
   }
 }
 
