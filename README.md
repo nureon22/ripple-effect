@@ -2,7 +2,7 @@
 
 Create ripple animation when user click the element.
 
-[Preview how it look](assets/preview.gif)
+[Demo](https://nureon22.github.io/ripple-effect/)
 
 ## Installation
 
