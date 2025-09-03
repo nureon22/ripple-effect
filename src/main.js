@@ -289,10 +289,11 @@ export default class RippleEffect {
       "border-radius": "50%",
       opacity: "0",
       transform: "translate(-50%, -50%) scale(0)",
-      transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+      transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity 0ms linear 0ms`,
     });
 
     const exit = () => {
+      effect.style.transitionDuration = `${this.options.duration}ms, ${this.options.duration / 2}ms`;
       effect.style.opacity = "0";
 
       setTimeout(() => {
