@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <style>
@@ -6,10 +6,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
         margin: 0;
         height: 100vh;
-        background-color: #181818;
-        color: #FFFFFF;
+        font-family: sans-serif;
+        line-height: 1.5;
       }
       .box {
         display: block;
@@ -17,13 +18,88 @@
         height: 300px;
         border: 1px solid;
       }
+      .options {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .options > div {
+        display: flex;
+        flex-direction: column;
+      }
+      input,
+      select {
+        font-size: 1em;
+        box-sizing: border-box;
+        padding: 0px 8px;
+        min-width: 80px;
+        min-height: 32px;
+      }
     </style>
-    <script src="dist/main.js"></script>
-    <script type="module">
-      new RippleEffect(document.querySelector(".box"), {});
+    <script defer src="https://cdn.jsdelivr.net/npm/@nureon22/ripple-effect/dist/main.js"></script>
+    <script defer>
+      let ripple;
+
+      window.addEventListener("load", () => {
+        ripple = RippleEffect.attachTo(document.querySelector(".box"), {
+          duration: 400,
+          exitdelay: 100,
+        });
+      });
+
+      function updateRipple() {
+        const duration = document.querySelector('input[id="duration"]').value;
+        const color = document.querySelector('input[id="color"]').value;
+        const easing = document.querySelector('select[id="easing"]').value;
+        const unbounded = document.querySelector(
+          'input[id="unbounded"]',
+        ).checked;
+
+        ripple.destroy();
+        ripple = RippleEffect.attachTo(document.querySelector(".box"), {
+          duration: Number(duration),
+          exitdelay: 100,
+          color: color,
+          unbounded: !!unbounded,
+          easing: easing,
+        });
+      }
     </script>
   </head>
   <body>
+    <div class="options">
+      <div>
+        <label for="duration">Duration</label>
+        <input
+          id="duration"
+          type="number"
+          min="100"
+          max="10000"
+          value="400"
+          step="10"
+          onchange="updateRipple()"
+        />
+      </div>
+      <div>
+        <label for="color">Color</label>
+        <input id="color" type="color" onchange="updateRipple()" />
+      </div>
+      <div>
+        <label for="unbounded">unbounded</label>
+        <input id="unbounded" type="checkbox" onchange="updateRipple()" />
+      </div>
+      <div>
+        <label for="easing">Easing</label>
+        <select id="easing" onchange="updateRipple()">
+          <option value="ease-in" selected>EaseIn</option>
+          <option value="ease-out">EaseOut</option>
+          <option value="ease-in-out">EaseInOut</option>
+          <option value="linear">Linear</option>
+        </select>
+      </div>
+    </div>
+
     <div class="box"></div>
   </body>
 </html>
