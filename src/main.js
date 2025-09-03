@@ -9,8 +9,8 @@ async function waitAnimationFrame() {
 }
 
 /**
- * @prop {HTMLElement} element
- * @prop {{ [key: string]: string }} properties
+ * @param {HTMLElement} element
+ * @param {{ [key: string]: string }} properties
  */
 function setCSSProperties(element, properties) {
   for (let key in properties) {
