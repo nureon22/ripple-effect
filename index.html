@@ -40,7 +40,7 @@
       }
     </style>
     <script type="module">
-      import RippleEffect from './src/main.js';
+      import RippleEffect from "./src/main.js";
       let ripple;
 
       window.addEventListener("load", () => {
@@ -50,7 +50,7 @@
         });
       });
 
-      function updateRipple() {
+      window.updateRipple = function () {
         const duration = document.querySelector('input[id="duration"]').value;
         const color = document.querySelector('input[id="color"]').value;
         const easing = document.querySelector('select[id="easing"]').value;
@@ -66,7 +66,7 @@
           unbounded: !!unbounded,
           easing: easing,
         });
-      }
+      };
     </script>
   </head>
   <body>
