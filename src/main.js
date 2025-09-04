@@ -64,29 +64,29 @@ export default class RippleEffect {
 
     this.wrapper = this.document.createElement("span");
     setCSSProperties(this.wrapper, {
-      display: "block",
-      position: "absolute",
-      top: "0px",
-      right: "0px",
-      bottom: "0px",
-      left: "0px",
+      "display": "block",
+      "position": "absolute",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
       "border-radius": this.options.rounded ? "50%" : "inherit",
-      color: this.options.color || "currentColor",
-      overflow: this.options.unbounded ? "visible" : "hidden",
+      "color": this.options.color || "currentColor",
+      "overflow": this.options.unbounded ? "visible" : "hidden",
       "pointer-events": "none",
     });
     this.target.prepend(this.wrapper);
 
     const hoveredAndFocusedLayerStyles = {
-      display: "block",
-      position: "absolute",
-      top: "0px",
-      right: "0px",
-      bottom: "0px",
-      left: "0px",
+      "display": "block",
+      "position": "absolute",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
       "background-color": "currentColor",
-      opacity: "0",
-      transition: `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
+      "opacity": "0",
+      "transition": `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
     };
 
     this.focusedLayer = this.document.createElement("span");
@@ -268,17 +268,17 @@ export default class RippleEffect {
 
     const effect = this.document.createElement("span");
     setCSSProperties(effect, {
-      display: "block",
+      "display": "block",
       "background-color": "currentColor",
-      position: "absolute",
-      left: x + "px",
-      top: y + "px",
-      width: size + "px",
-      height: size + "px",
+      "position": "absolute",
+      "left": x + "px",
+      "top": y + "px",
+      "width": size + "px",
+      "height": size + "px",
       "border-radius": "50%",
-      opacity: "0",
-      transform: "translate(-50%, -50%) scale(0)",
-      transition: `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity 0ms linear 0ms`,
+      "opacity": "0",
+      "transform": "translate(-50%, -50%) scale(0)",
+      "transition": `transform ${this.options.duration}ms ${this.options.easing} 0ms, opacity 0ms linear 0ms`,
     });
 
     const exit = () => {
@@ -340,7 +340,7 @@ export default class RippleEffect {
     hoveredOpacity: 0.08,
     focusedOpacity: 0.08,
     pressedOpacity: 0.12,
-  }
+  };
 }
 
 let isTouchscreen = false;
