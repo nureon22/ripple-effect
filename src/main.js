@@ -86,7 +86,6 @@ export default class RippleEffect {
       "left": "0px",
       "background-color": "currentColor",
       "opacity": "0",
-      "transition": `opacity ${this.options.duration / 2}ms ${this.options.easing} 0ms`,
     };
 
     this.focusedLayer = this.document.createElement("span");
