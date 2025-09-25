@@ -103,15 +103,18 @@ export default class RippleEffect {
       this.target.style.position = "relative";
     }
 
+    let isKeyPressed = false;
+
     /**
      * @param {KeyboardEvent} event
      */
     const onKeyDown = (event) => {
-      if (event.key != " ") {
+      if (event.key != " " || isKeyPressed) {
         return;
       }
 
-      let pressing = true;
+      isKeyPressed = true;
+
       let x, y;
 
       const rect = this.wrapper.getBoundingClientRect();
@@ -125,12 +128,12 @@ export default class RippleEffect {
 
         this.trigger(x, y, (e) => {
           exit = e;
-          !pressing && exit();
+          !isKeyPressed && exit();
         });
         window.addEventListener(
           "keyup",
-          () => {
-            pressing = false;
+          (event) => {
+            isKeyPressed = false;
             exit && exit();
           },
           { once: true },
