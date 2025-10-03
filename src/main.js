@@ -189,7 +189,7 @@ export default class RippleEffect {
             pressing = false;
             exit && exit();
           },
-          { once: true },
+          { once: true, passive: true },
         );
       } else {
         this.trigger(x, y);
@@ -225,7 +225,7 @@ export default class RippleEffect {
     }
 
     trigger.addEventListener("mousedown", onTouch);
-    trigger.addEventListener("touchstart", onTouch);
+    trigger.addEventListener("touchstart", onTouch, { passive: true });
 
     trigger.addEventListener("mouseenter", onHover);
     trigger.addEventListener("mouseleave", onHover);
@@ -359,6 +359,6 @@ if (typeof window == "object") {
     () => {
       isTouchscreen = true;
     },
-    { once: true },
+    { once: true, passive: true },
   );
 }
